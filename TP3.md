@@ -6,6 +6,8 @@
 
 1. **Quels sont les 5 derniers paquets installés sur votre machine ?**
 La commande pour afficher les 5 derniers paquets installé est `grep installed /var/log/dpkg.log | tail -5`
+, nous affichons un historique des paquets installés sur la machine, et en ajoutant le suffixe “| tail -n 5”, nous ne faisons apparaître que les 5 derniers.
+
 ```linux
 2020-02-28 17:24:13 status installed libarchive13:amd64 3.4.0-1ubuntu0.1
 2020-02-28 17:24:13 status installed libc-bin:amd64 2.30-0ubuntu2
@@ -17,8 +19,11 @@ La commande pour afficher les 5 derniers paquets installé est `grep installed /
 **Comment explique-t-on la (petite) différence de comptage ?**
 Commande dpkg: `dpkg --list | grep "^ii  " | wc -l`
 Commande apt:  `apt list --installed | grep "$matique]" | wc -l`
+
+Pour apt, le code permettant de compter le nombre de paquets installés est: apt list --installed | wc -l et pour dpkg, il s'agit de: dpkg -l | grep ii | wc -l. Les commandes affichent respectivement 555 et 556 paquets. On constate qu’apt a un paquet de plus mais en fait cela est dû au fait que nous utilisons une méthode qui compte les lignes affichées correspondant au nombre de paquets installés. dpkg -l | wc -l montre aussi les paquets dont il ne reste que les fichiers de configuration. Les deux valeurs 555 et 556 ne sont pas exactes car des lignes n'ayant pas de rapport avec les paquets sont comptées, ce qui augmente le nombre retourné par wc -l sans que cela ait un rapport avec le nombre de paquets réel. Cet écart est toutefois léger (moins de 10).
+
 On a récupéré 556 comme résultat pour toutes les deux commandes.
-Car on a ajouté quelques symboles de grep ignorant des lignes inutiles. `^***`est pour adapter des lignes commencant avec `***`. Et `$***`est pour adapter des lignes derminant avec `***`
+Car on a ajouté quelques symboles de grep ignorant des lignes inutiles. `^***` C'est pour adapter des lignes commencant avec `***`. Et `$***` c'est pour adapter des lignes derminant avec `***`
 
 3. **Combien de paquets sont disponibles en téléchargement ?**
 `apt list |wc -l`
@@ -34,7 +39,8 @@ Le paquet fortunes permet d'afficher quelques linges de citations, proverbes, ad
 
 6. **Quels paquets proposent de jouer au sudoku ?**
 le paquet sudoku
-`sudo apt install sudoku`
+ Les paquets permettant de jouer au sudoku peuvent être connus avec: `apt search sudoku`. Cela affiche en revanche d'autres paquets sans rapport avec le jeu mais présentant “sudoku” dans leur nom. Pour en citer quelques-uns, il y a: sudoku, ksudoku, gnome-sudoku.
+
 
 7. **Lister les derniers paquets installés explicitement avec la commande apt install.**
 `grep "apt install" /var/log/apt/history.log`
@@ -47,10 +53,10 @@ Commandline: apt install sudoku
 la commande `ls` est installée dans le paquet `coreutils`.
 Tout d'abord, il faut savoir ou se trouve `ls`. On peut utiliser `which -a ls`, et après la commande dpkg -S est utilisé pour le chemin /bin/ls(`dpkg -S /bin/ls`).
 Pour réunir deux commandes, `xargs` peut être utilisé de passer l'argument entre les deux commandes.
-Mais on passe aussi le mauvais résultat. C'est meilleur de le redirecter au chemin null: `2>/dev/null`.
-A la fin, la commande voudrais être comme: 
+Mais on passe aussi le mauvais résultat. C'est meilleur de le rediriger  au chemin null: `2>/dev/null`.
+A la fin, la commande est : 
 ```linux
-which -a programme | xargs dpkg -S 2>/dev/null
+which -a $1 | xargs dpkg -S 2>/dev/null
 ```
 
 ### Exercice 3
@@ -67,6 +73,11 @@ fi
 **Lister les programmes livrés avec coreutils. A quoi sert la commande '[' et comment afficher ce qu'elle retourne ?**
 La commande `dpkg -L coreutils` est pour lister les programmes livrés avec coreutils.
 La commande "[]" réalise un test, elle exécute l'instruction donnée dans les crochets et retourne le résultat ou une erreur.
+[ a la même fonctionnalité que test, d'après le manuel, c'est à dire vérifier le type d'un fichier ou comparer des valeurs.
+Pour afficher un retour, voici comment faire: [ -f toto.txt ] && echo “oui” || echo “non”.
+Si toto.txt existe, cela affichera “oui”, sinon cela affichera “non”.
+
+
 
 ***
 ### Exercice 5 : aptitude
@@ -74,6 +85,8 @@ La commande "[]" réalise un test, elle exécute l'instruction donnée dans les 
 1. `sudo apt install aptitude` installer aptitude.
 2. toucher `/` pour chercher `emacs`.
 3. toucher `g` pour l'installer.
+
+On commence par installer aptitude en rentrant sudo apt install aptitude. Une fois cette opération effectuée, on lance aptitude en administrateur avec sudo aptitude, puis on recherche emacs avec la touche / et on l'installe en se positionnant dessus et en appuyant sur la touche + pour le sélectionner et ensuite sur g.
 
 ### Exercice 6. Installation d’un paquet par PPA 
 Certains logiciels ne figurent pas dans les dépôts officiels. C’est le cas par exemple de la version ”officielle”

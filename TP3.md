@@ -64,7 +64,7 @@ fi
 ```
 
 ### Exercice 4
-**Lister les programmes livrés avec coreutils. A quoi sert la commande ’[’ et comment afficher ce qu’elle retourne ?**
+**Lister les programmes livrés avec coreutils. A quoi sert la commande '[' et comment afficher ce qu'elle retourne ?**
 La commande `dpkg -L coreutils` est pour lister les programmes livrés avec coreutils.
 La commande "[]" réalise un test, elle exécute l'instruction donnée dans les crochets et retourne le résultat ou une erreur.
 
